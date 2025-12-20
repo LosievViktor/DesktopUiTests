@@ -40,6 +40,8 @@ namespace DesktopUiTests.Tests
             Assert.That(mainWindow.MemberSinceLabel.Text== "02.05.2000");
 
             mainWindow.AddProductButton.Click();
+
+            Assert.That(mainWindow.GetAllWindowsOfApplication().Contains("Add Product Listing"));
         }
     }
 }

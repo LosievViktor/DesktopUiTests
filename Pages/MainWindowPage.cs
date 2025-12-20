@@ -8,10 +8,14 @@ namespace DesktopUiTests.Pages
     public class MainWindowPage
     {
         private readonly Window _window;
+        private readonly UIA3Automation _automation;
+        private readonly Application _app;
 
         public MainWindowPage(Application app, UIA3Automation automation)
         {
             _window = Retry.WhileNull(() => app.GetMainWindow(automation), timeout: TimeSpan.FromSeconds(5)).Result;
+            _app = app;
+            _automation = automation;
         }
 
         private AutomationElement? FindElement(string AutomationId)
@@ -42,5 +46,10 @@ namespace DesktopUiTests.Pages
             return  ListItemsForSale.Items.ToList();
         }
 
+        public List<string> GetAllWindowsOfApplication() 
+        {
+            var windows = _app.GetAllTopLevelWindows(_automation);
+            return windows.Select(x => x.Title).ToList();
+        }
     }
 }
