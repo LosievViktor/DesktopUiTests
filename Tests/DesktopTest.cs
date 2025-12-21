@@ -6,6 +6,7 @@ namespace DesktopUiTests.Tests
     public class DesktopTests:BaseTest
     {
         [Test]
+        [Description("Simple checks on Windows application.")]
         public void DesktopTest() 
         {
             var mainWindow = new MainWindowPage(App, Automation);
