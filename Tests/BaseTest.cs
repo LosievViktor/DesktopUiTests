@@ -12,7 +12,6 @@ namespace DesktopUiTests.Tests
         public void SetUp()
         {
             App = Application.Launch("..\\..\\..\\Application\\DataBindingDemo.exe");
-
             Automation = new UIA3Automation();
         }
 
