@@ -3,9 +3,6 @@ using MauiUkraine.UITests.Pages;
 
 namespace MauiUkraine.UITests.Tests;
 
-/// <summary>
-/// Navigates to each showcase page using HomePage feature cards (not the Shell flyout/burger menu).
-/// </summary>
 [TestFixture]
 [Apartment(ApartmentState.STA)]
 public sealed class HomeNavigationTests : UiTestBase
@@ -72,13 +69,14 @@ public sealed class HomeNavigationTests : UiTestBase
 
 		Assert.That(page.DisplayAlertButton.IsEnabled, Is.True);
 		Assert.That(page.OpenModalButton.IsEnabled, Is.True);
-	}
+        
+    }
 
-	[Test]
-	public void HomePage_OpenAlertsThenModal_ViaHomeMenuButton()
-	{
-		var home = new HomePage(MainWindow);
-		var alerts = home.OpenAlertsAndDialogs();
+    [Test]
+    public void HomePage_OpenAlertsThenModal_ViaHomeMenuButton()
+    {
+        var home = new HomePage(MainWindow);       
+        var alerts = home.OpenAlertsAndDialogs();
 		var modal = alerts.OpenModal();
 
 		Assert.That(modal.Heading, Is.Not.Null);

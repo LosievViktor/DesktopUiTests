@@ -11,21 +11,8 @@ public static class AppConfig
 	public static string AppPath
 	{
 		get
-		{
-			var fromEnv = Environment.GetEnvironmentVariable("MAUI_UKRAINE_APP_PATH");
-			if (!string.IsNullOrWhiteSpace(fromEnv))
-			{
-				return Path.GetFullPath(fromEnv);
-			}
-
-			var defaultPath = Path.GetFullPath(Path.Combine(
-				TestContext.CurrentContext.TestDirectory,
-				"..", "..", "..", "..",
-				"MauiUkraine",
-				"bin", "Debug", "net10.0-windows10.0.19041.0", "win-x64",
-				"MauiControlsShowcase.exe"));
-
-			return defaultPath;
+		{		
+			return "C:\\repository\\MauiUkraine\\bin\\x64\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\MauiControlsShowcase.exe";
 		}
 	}
 

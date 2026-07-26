@@ -35,7 +35,7 @@ public abstract class UiTestBase
 		// WinUI/MAUI needs a short settle time before TapGestureRecognizer clicks are reliable.
 		UiWait.WaitForAutomationId(MainWindow, AutomationIds.Home.HeroTitle);
 		UiWait.WaitForAutomationId(MainWindow, AutomationIds.Home.MenuButtons);
-		Thread.Sleep(750);
+		//Thread.Sleep(750);
 	}
 
 	[TearDown]

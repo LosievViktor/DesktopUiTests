@@ -1,8 +1,5 @@
 namespace MauiUkraine.UITests.Infrastructure;
 
-/// <summary>
-/// AutomationIds from MauiControlsShowcase (do not change the app; keep these in sync).
-/// </summary>
 public static class AutomationIds
 {
 	public static class Shell
