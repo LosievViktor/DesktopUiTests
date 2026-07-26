@@ -35,7 +35,27 @@ public abstract class UiTestBase
 		// WinUI/MAUI needs a short settle time before TapGestureRecognizer clicks are reliable.
 		UiWait.WaitForAutomationId(MainWindow, AutomationIds.Home.HeroTitle);
 		UiWait.WaitForAutomationId(MainWindow, AutomationIds.Home.MenuButtons);
-		//Thread.Sleep(750);
+		EnsureEnglishLanguage();
+	}
+
+	/// <summary>
+	/// App language is persisted in Preferences; force English for this suite.
+	/// </summary>
+	private void EnsureEnglishLanguage()
+	{
+		var hero = UiWait.WaitForAutomationId(MainWindow, AutomationIds.Home.HeroTitle);
+		if (hero.Name?.Contains(EnglishTexts.Home.HeroTitle, StringComparison.Ordinal) == true)
+		{
+			return;
+		}
+
+		UiWait.ClickByAutomationId(MainWindow, AutomationIds.Home.LanguageEn);
+		UiWait.WaitForNameContains(
+			MainWindow,
+			AutomationIds.Home.HeroTitle,
+			EnglishTexts.Home.HeroTitle,
+			TimeSpan.FromSeconds(10));
+		UiWait.WaitForAutomationId(MainWindow, AutomationIds.Home.MenuButtons);
 	}
 
 	[TearDown]
@@ -74,7 +94,7 @@ public abstract class UiTestBase
 		}
 
 		Assert.Fail(
-			$"App not found at '{AppConfig.AppPath}'. " +
+			$"Check that app exists at '{AppConfig.AppPath}'. " +
 			"Build MauiControlsShowcase for Windows (net10.0-windows10.0.19041.0) " +
 			"or set MAUI_UKRAINE_APP_PATH to the .exe path.");
 	}

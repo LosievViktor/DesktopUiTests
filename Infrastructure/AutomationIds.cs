@@ -5,6 +5,18 @@ public static class AutomationIds
 	public static class Shell
 	{
 		public const string AppShell = "app_shell";
+		public const string HomeButton = "shell_home_button";
+		public const string FlyoutHeader = "flyout_header";
+		public const string FlyoutHeaderTitle = "flyout_header_title";
+		public const string FlyoutHeaderTagline = "flyout_header_tagline";
+		public const string FlyoutHome = "flyout_home";
+		public const string FlyoutButtons = "flyout_buttons";
+		public const string FlyoutSelection = "flyout_selection";
+		public const string FlyoutCollections = "flyout_collections";
+		public const string FlyoutIndicators = "flyout_indicators";
+		public const string FlyoutAlerts = "flyout_alerts";
+		public const string FlyoutFooter = "flyout_footer";
+		public const string FlyoutFooterLabel = "flyout_footer_label";
 	}
 
 	public static class Home
@@ -66,6 +78,9 @@ public static class AutomationIds
 		public const string AddButton = "collections_add_button";
 		public const string Refresh = "collections_refresh";
 		public const string TodoList = "collections_todo_list";
+		public const string TodoItem = "collections_todo_item";
+		public const string TodoDelete = "collections_todo_delete";
+		public const string TodoDone = "collections_todo_done";
 		public const string EmptyLabel = "collections_empty_label";
 	}
 

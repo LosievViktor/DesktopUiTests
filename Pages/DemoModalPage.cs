@@ -13,7 +13,11 @@ public sealed class DemoModalPage : BasePage
 		=> WaitUntilDisplayed(AutomationIds.Modal.Heading);
 
 	public AutomationElement Heading => ById(AutomationIds.Modal.Heading);
+	public AutomationElement Body => ById(AutomationIds.Modal.Body);
 	public AutomationElement CloseButton => ById(AutomationIds.Modal.CloseButton);
+
+	public string HeadingText => GetName(AutomationIds.Modal.Heading);
+	public string BodyText => GetName(AutomationIds.Modal.Body);
 
 	public void Close()
 		=> Click(AutomationIds.Modal.CloseButton);

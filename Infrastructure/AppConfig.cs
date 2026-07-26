@@ -11,7 +11,7 @@ public static class AppConfig
 	public static string AppPath
 	{
 		get
-		{		
+		{	// Set real path to your MauiUkraine Application	
 			return "C:\\repository\\MauiUkraine\\bin\\x64\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\MauiControlsShowcase.exe";
 		}
 	}

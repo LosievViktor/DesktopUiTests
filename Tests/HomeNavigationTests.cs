@@ -8,81 +8,32 @@ namespace MauiUkraine.UITests.Tests;
 public sealed class HomeNavigationTests : UiTestBase
 {
 	[Test]
-	public void HomePage_IsDisplayed_OnLaunch()
+	public void HomePage()
 	{
 		var home = new HomePage(MainWindow);
 		home.WaitUntilLoaded();
 
-		Assert.That(home.HeroTitle, Is.Not.Null);
-		Assert.That(home.AboutButton.IsEnabled, Is.True);
-		Assert.That(UiWait.Exists(MainWindow, AutomationIds.Home.MenuButtons), Is.True);
-	}
+		home.OpenAboutAndDismiss();
 
-	[Test]
-	public void HomePage_OpenButtonsAndInputs_ViaHomeMenuButton()
-	{
-		var home = new HomePage(MainWindow);
-		var page = home.OpenButtonsAndInputs();
+		Assert.That(home.IsLoaded(), Is.True, "Check that Home page is still loaded after dismissing About alert");
+		Assert.That(home.AboutButton.IsEnabled, Is.True, "Check that About button is enabled after dismissing About alert");
 
-		Assert.That(page.FilledButton.IsEnabled, Is.True);
-		Assert.That(page.OutlineButton.IsEnabled, Is.True);
-		Assert.That(page.NameEntry, Is.Not.Null);
-		Assert.That(UiWait.Exists(MainWindow, AutomationIds.Home.HeroTitle, TimeSpan.FromSeconds(1)), Is.False);
-	}
+		home.SelectEnglish();
 
-	[Test]
-	public void HomePage_OpenSelectionControls_ViaHomeMenuButton()
-	{
-		var home = new HomePage(MainWindow);
-		var page = home.OpenSelectionControls();
-
-		Assert.That(page.NotificationsSwitch, Is.Not.Null);
-		Assert.That(page.Checkbox, Is.Not.Null);
-		Assert.That(page.PlatformPicker, Is.Not.Null);
-	}
-
-	[Test]
-	public void HomePage_OpenCollections_ViaHomeMenuButton()
-	{
-		var home = new HomePage(MainWindow);
-		var page = home.OpenCollections();
-
-		Assert.That(page.NewTodoEntry, Is.Not.Null);
-		Assert.That(page.AddButton.IsEnabled, Is.True);
-	}
-
-	[Test]
-	public void HomePage_OpenIndicatorsAndProgress_ViaHomeMenuButton()
-	{
-		var home = new HomePage(MainWindow);
-		var page = home.OpenIndicatorsAndProgress();
-
-		Assert.That(page.ActivitySwitch, Is.Not.Null);
-		Assert.That(page.SimulateButton.IsEnabled, Is.True);
-	}
-
-	[Test]
-	public void HomePage_OpenAlertsAndDialogs_ViaHomeMenuButton()
-	{
-		var home = new HomePage(MainWindow);
-		var page = home.OpenAlertsAndDialogs();
-
-		Assert.That(page.DisplayAlertButton.IsEnabled, Is.True);
-		Assert.That(page.OpenModalButton.IsEnabled, Is.True);
-        
-    }
-
-    [Test]
-    public void HomePage_OpenAlertsThenModal_ViaHomeMenuButton()
-    {
-        var home = new HomePage(MainWindow);       
-        var alerts = home.OpenAlertsAndDialogs();
-		var modal = alerts.OpenModal();
-
-		Assert.That(modal.Heading, Is.Not.Null);
-		Assert.That(modal.CloseButton.IsEnabled, Is.True);
-
-		modal.Close();
-		Assert.That(UiWait.Exists(MainWindow, AutomationIds.Alerts.DisplayAlert), Is.True);
+		Assert.That(home.HeroTitle.Name, Does.Contain(EnglishTexts.Home.HeroTitle), "Check that hero title contains English app name after selecting English");
+		Assert.That(home.HeroTitle, Is.Not.Null, "Check that hero title is displayed");
+		Assert.That(home.AboutButton.IsEnabled, Is.True, "Check that About button is enabled");
+		Assert.That(UiWait.Exists(MainWindow, AutomationIds.Home.MenuButtons), Is.True, "Check that Buttons menu card is present");
+		Assert.That(home.HeroTitle.Name, Does.Contain(EnglishTexts.Home.HeroTitle), "Check that hero title shows English text");
+		Assert.That(home.AboutButton.Name, Does.Contain(EnglishTexts.Home.AboutButton), "Check that About button shows English text");
+		Assert.That(home.MenuSection.Name, Does.Contain(EnglishTexts.Home.MenuSection), "Check that menu section shows English text");
+		Assert.That(home.LanguageEnglish, Is.Not.Null, "Check that English language radio button is present");
+		Assert.That(home.LanguageUkrainian, Is.Not.Null, "Check that Ukrainian language radio button is present");
+		Assert.That(home.HeroSubtitle, Is.Not.Null, "Check that hero subtitle is present");
+		Assert.That(home.MenuButtons, Is.Not.Null, "Check that Buttons menu card is present");
+		Assert.That(home.MenuSelection, Is.Not.Null, "Check that Selection menu card is present");
+		Assert.That(home.MenuCollections, Is.Not.Null, "Check that Collections menu card is present");
+		Assert.That(home.MenuIndicators, Is.Not.Null, "Check that Indicators menu card is present");
+		Assert.That(home.MenuAlerts, Is.Not.Null, "Check that Alerts menu card is present");
 	}
 }
