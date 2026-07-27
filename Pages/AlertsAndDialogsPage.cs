@@ -57,7 +57,7 @@ public sealed class AlertsAndDialogsPage : BasePage
 		if (!UiActions.TryClickDialogButton(Window, EnglishTexts.Alerts.SortByPriority, TimeSpan.FromSeconds(3))
 			&& !UiActions.TryClickDialogButton(Window, EnglishTexts.Alerts.Cancel, TimeSpan.FromSeconds(3)))
 		{
-			Assert.Fail("Check that ActionSheet options Priority or Cancel can be interacted with");
+			Assert.Fail("Check that ActionSheet options Priority or Cancel can be interacted with.");
 		}
 
 		WaitForNameContains(
@@ -75,7 +75,7 @@ public sealed class AlertsAndDialogsPage : BasePage
 			"Prompt edit field did not appear.");
 
 		var edit = Window.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Edit));
-		Assert.That(edit, Is.Not.Null, "Check that prompt edit field is displayed");
+		Assert.That(edit, Is.Not.Null, "Check that prompt edit field is displayed.");
 		UiActions.SetText(edit!, name);
 		UiActions.ClickDialogButton(Window, EnglishTexts.Alerts.PromptOk, TimeSpan.FromSeconds(10));
 		WaitForNameContains(AutomationIds.Alerts.LastResult, name, TimeSpan.FromSeconds(5));

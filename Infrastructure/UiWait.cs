@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Runtime.InteropServices;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
@@ -7,287 +8,243 @@ namespace MauiUkraine.UITests.Infrastructure;
 
 public static class UiWait
 {
-	public static AutomationElement WaitForAutomationId(
-		AutomationElement root,
-		string automationId,
-		TimeSpan? timeout = null)
-	{
-		var deadline = DateTime.UtcNow + (timeout ?? AppConfig.DefaultTimeout);
-		Exception? lastError = null;
+    public static AutomationElement WaitForAutomationId(AutomationElement root,string automationId, TimeSpan? timeout = null)
+    {
+        var waitTime = timeout ?? AppConfig.DefaultTimeout;
+        var deadline = DateTime.UtcNow + waitTime;
 
-		while (DateTime.UtcNow < deadline)
-		{
-			try
-			{
-				var element = root.FindFirstDescendant(cf => cf.ByAutomationId(automationId));
-				if (element is not null)
-				{
-					return element;
-				}
-			}
-			catch (Exception ex)
-			{
-				lastError = ex;
-			}
+        Exception? lastError = null;
 
-			Thread.Sleep(AppConfig.PollInterval);
-		}
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var element = root.FindFirstDescendant(cf => cf.ByAutomationId(automationId));
 
-		var detail = lastError is null ? string.Empty : $" Last error: {lastError.Message}";
-		throw new TimeoutException(
-			$"Element with AutomationId '{automationId}' was not found within {(timeout ?? AppConfig.DefaultTimeout).TotalSeconds:0}s.{detail}");
-	}
+                if (element != null)
+                    return element;
+            }
+            catch (COMException ex)
+            {
+                lastError = ex;
+            }
 
-	public static AutomationElement WaitForName(
-		AutomationElement root,
-		string name,
-		ControlType? controlType = null,
-		TimeSpan? timeout = null)
-	{
-		var deadline = DateTime.UtcNow + (timeout ?? AppConfig.DefaultTimeout);
-		Exception? lastError = null;
+            Thread.Sleep(AppConfig.PollInterval);
+        }
 
-		while (DateTime.UtcNow < deadline)
-		{
-			try
-			{
-				var element = controlType is null
-					? root.FindFirstDescendant(cf => cf.ByName(name))
-					: root.FindFirstDescendant(cf => cf.ByName(name).And(cf.ByControlType(controlType.Value)));
+        throw new TimeoutException(
+            $"Element with AutomationId '{automationId}' was not found within {waitTime.TotalSeconds:0}s." +
+            (lastError != null ? $" Last error: {lastError.Message}" : ""));
+    }
 
-				if (element is not null)
-				{
-					return element;
-				}
-			}
-			catch (Exception ex)
-			{
-				lastError = ex;
-			}
+    public static AutomationElement WaitForName(AutomationElement root,string name,ControlType? controlType = null, TimeSpan? timeout = null)
+    {
+        var waitTime = timeout ?? AppConfig.DefaultTimeout;
+        var deadline = DateTime.UtcNow + waitTime;
 
-			Thread.Sleep(AppConfig.PollInterval);
-		}
+        Exception? lastError = null;
 
-		var detail = lastError is null ? string.Empty : $" Last error: {lastError.Message}";
-		throw new TimeoutException(
-			$"Element with Name '{name}' was not found within {(timeout ?? AppConfig.DefaultTimeout).TotalSeconds:0}s.{detail}");
-	}
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                AutomationElement? element = controlType == null
+                    ? root.FindFirstDescendant(cf => cf.ByName(name))
+                    : root.FindFirstDescendant(cf =>
+                        cf.ByName(name)
+                            .And(cf.ByControlType(controlType.Value)));
 
-	public static bool Exists(AutomationElement root, string automationId, TimeSpan? timeout = null)
-	{
-		try
-		{
-			WaitForAutomationId(root, automationId, timeout ?? TimeSpan.FromSeconds(3));
-			return true;
-		}
-		catch (TimeoutException)
-		{
-			return false;
-		}
-	}
+                if (element != null)
+                    return element;
+            }
+            catch (COMException ex)
+            {
+                lastError = ex;
+            }
 
-	public static void WaitUntil(Func<bool> condition, TimeSpan? timeout = null, string? message = null)
-	{
-		var deadline = DateTime.UtcNow + (timeout ?? AppConfig.DefaultTimeout);
-		while (DateTime.UtcNow < deadline)
-		{
-			try
-			{
-				if (condition())
-				{
-					return;
-				}
-			}
-			catch
-			{
-				// keep polling
-			}
+            Thread.Sleep(AppConfig.PollInterval);
+        }
 
-			Thread.Sleep(AppConfig.PollInterval);
-		}
+        throw new TimeoutException(
+            $"Element with Name '{name}' was not found within {waitTime.TotalSeconds:0}s." +
+            (lastError != null ? $" Last error: {lastError.Message}" : ""));
+    }
 
-		throw new TimeoutException(message ?? "Condition was not met within the allotted timeout.");
-	}
+    public static bool Exists(AutomationElement root,string automationId,TimeSpan? timeout = null)
+    {
+        try
+        {
+            WaitForAutomationId(root, automationId, timeout ?? TimeSpan.FromSeconds(3));
+            return true;
+        }
+        catch (TimeoutException)
+        {
+            return false;
+        }
+    }
 
-	public static void WaitForNameContains(
-		AutomationElement root,
-		string automationId,
-		string expectedSubstring,
-		TimeSpan? timeout = null)
-	{
-		WaitUntil(
-			() =>
-			{
-				var element = root.FindFirstDescendant(cf => cf.ByAutomationId(automationId));
-				return element is not null
-					&& (element.Name?.Contains(expectedSubstring, StringComparison.OrdinalIgnoreCase) ?? false);
-			},
-			timeout,
-			$"Element '{automationId}' did not contain '{expectedSubstring}' in Name.");
-	}
+    public static void WaitUntil(Func<bool> condition,TimeSpan? timeout = null, string? message = null)
+    {
+        var deadline = DateTime.UtcNow + (timeout ?? AppConfig.DefaultTimeout);
 
-	public static void ClickByAutomationId(Window window, string automationId, TimeSpan? timeout = null)
-	{
-		window.Focus();
-		try
-		{
-			window.SetForeground();
-		}
-		catch
-		{
-			// ignored
-		}
+        while (DateTime.UtcNow < deadline)
+        {
+            if (condition()) return;
+            Thread.Sleep(AppConfig.PollInterval);
+        }
 
-		var element = WaitForAutomationId(window, automationId, timeout);
-		EnsureOnScreen(window, element);
-		ClickElement(element);
-	}
+        throw new TimeoutException(message ?? "Condition was not met within the allotted timeout.");
+    }
 
-	/// <summary>
-	/// Scrolls the focused page until the element with the given AutomationId appears (or is on-screen).
-	/// </summary>
-	public static AutomationElement WaitForAutomationIdScrolling(
-		Window window,
-		string automationId,
-		TimeSpan? timeout = null)
-	{
-		var deadline = DateTime.UtcNow + (timeout ?? AppConfig.DefaultTimeout);
-		Exception? lastError = null;
+    public static void WaitForNameContains(AutomationElement root, string automationId, string expectedSubstring, TimeSpan? timeout = null)
+    {
+        WaitUntil(
+            () =>
+            {
+                var element = root.FindFirstDescendant(cf => cf.ByAutomationId(automationId));
 
-		while (DateTime.UtcNow < deadline)
-		{
-			try
-			{
-				var element = window.FindFirstDescendant(cf => cf.ByAutomationId(automationId));
-				if (element is not null)
-				{
-					EnsureOnScreen(window, element);
-					return element;
-				}
-			}
-			catch (Exception ex)
-			{
-				lastError = ex;
-			}
+                return element != null &&
+                       element.Name?.Contains(
+                           expectedSubstring,
+                           StringComparison.OrdinalIgnoreCase) == true;
+            },
+            timeout,
+            $"Element '{automationId}' did not contain '{expectedSubstring}' in Name.");
+    }
 
-			ScrollDown(window);
-			Thread.Sleep(AppConfig.PollInterval);
-		}
+    public static void ClickByAutomationId( Window window, string automationId, TimeSpan? timeout = null)
+    {
+        window.Focus();
+        window.SetForeground();
 
-		var detail = lastError is null ? string.Empty : $" Last error: {lastError.Message}";
-		throw new TimeoutException(
-			$"Element with AutomationId '{automationId}' was not found (with scrolling) within {(timeout ?? AppConfig.DefaultTimeout).TotalSeconds:0}s.{detail}");
-	}
+        var element = WaitForAutomationId(window, automationId, timeout);
 
-	public static void EnsureOnScreen(Window window, AutomationElement element)
-	{
-		try
-		{
-			if (element.Patterns.ScrollItem.IsSupported)
-			{
-				element.Patterns.ScrollItem.Pattern.ScrollIntoView();
-				Thread.Sleep(200);
-				return;
-			}
-		}
-		catch
-		{
-			// fall through
-		}
+        EnsureOnScreen(window, element);
+        ClickElement(element);
+    }
 
-		var windowBounds = window.BoundingRectangle;
-		for (var i = 0; i < 12; i++)
-		{
-			var bounds = element.BoundingRectangle;
-			if (bounds.Width > 0 && bounds.Height > 0
-				&& bounds.Top >= windowBounds.Top
-				&& bounds.Bottom <= windowBounds.Bottom)
-			{
-				return;
-			}
+    public static AutomationElement WaitForAutomationIdScrolling(Window window,string automationId,TimeSpan? timeout = null)
+    {
+        var waitTime = timeout ?? AppConfig.DefaultTimeout;
+        var deadline = DateTime.UtcNow + waitTime;
 
-			ScrollDown(window);
-			Thread.Sleep(150);
-		}
-	}
+        Exception? lastError = null;
 
-	public static void ScrollDown(Window window)
-	{
-		try
-		{
-			window.Focus();
-			var bounds = window.BoundingRectangle;
-			if (bounds.Width > 0 && bounds.Height > 0)
-			{
-				Mouse.Position = new Point(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
-			}
-		}
-		catch
-		{
-			// ignored
-		}
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var element = window.FindFirstDescendant(cf => cf.ByAutomationId(automationId));
 
-		Mouse.Scroll(-3);
-	}
+                if (element != null)
+                {
+                    EnsureOnScreen(window, element);
+                    return element;
+                }
+            }
+            catch (COMException ex)
+            {
+                lastError = ex;
+            }
 
-	public static void ScrollToTop(Window window)
-	{
-		for (var i = 0; i < 8; i++)
-		{
-			try
-			{
-				window.Focus();
-				var bounds = window.BoundingRectangle;
-				if (bounds.Width > 0 && bounds.Height > 0)
-				{
-					Mouse.Position = new Point(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
-				}
-			}
-			catch
-			{
-				// ignored
-			}
+            ScrollDown(window);
 
-			Mouse.Scroll(5);
-			Thread.Sleep(100);
-		}
-	}
+            Thread.Sleep(AppConfig.PollInterval);
+        }
 
-	public static void ClickElement(AutomationElement element)
-	{
-		try
-		{
-			element.Focus();
-		}
-		catch
-		{
-			// ignored
-		}
+        throw new TimeoutException(
+            $"Element with AutomationId '{automationId}' was not found within {waitTime.TotalSeconds:0}s." +
+            (lastError != null ? $" Last error: {lastError.Message}" : ""));
+    }
 
-		if (element.Patterns.Invoke.IsSupported)
-		{
-			element.Patterns.Invoke.Pattern.Invoke();
-			return;
-		}
+    public static void EnsureOnScreen(Window window,AutomationElement element)
+    {
+        if (element.Patterns.ScrollItem.IsSupported)
+        {
+            try
+            {
+                element.Patterns.ScrollItem.Pattern.ScrollIntoView();
 
-		try
-		{
-			var point = element.GetClickablePoint();
-			Mouse.Click(point);
-			return;
-		}
-		catch
-		{
-			// fall through
-		}
+                Thread.Sleep(200);
 
-		var bounds = element.BoundingRectangle;
-		if (bounds.Width > 0 && bounds.Height > 0)
-		{
-			Mouse.Click(new Point(bounds.X + Math.Min(40, bounds.Width / 2), bounds.Y + Math.Min(20, bounds.Height / 2)));
-			return;
-		}
+                return;
+            }
+            catch (COMException)
+            {
+            }
+        }
 
-		element.Click();
-	}
+        var windowBounds = window.BoundingRectangle;
+
+        for (var i = 0; i < 12; i++)
+        {
+            var bounds = element.BoundingRectangle;
+
+            if (bounds.Width > 0 &&
+                bounds.Height > 0 &&
+                bounds.Top >= windowBounds.Top &&
+                bounds.Bottom <= windowBounds.Bottom)
+            {
+                return;
+            }
+
+            ScrollDown(window);
+
+            Thread.Sleep(150);
+        }
+    }
+
+    public static void ScrollDown(Window window)
+    {
+        window.Focus();
+
+        var bounds = window.BoundingRectangle;
+
+        Mouse.Position = new Point(
+            bounds.X + bounds.Width / 2,
+            bounds.Y + bounds.Height / 2);
+
+        Mouse.Scroll(-3);
+    }
+
+    public static void ScrollToTop(Window window)
+    {
+        window.Focus();
+
+        var bounds = window.BoundingRectangle;
+
+        Mouse.Position = new Point(
+            bounds.X + bounds.Width / 2,
+            bounds.Y + bounds.Height / 2);
+
+        for (var i = 0; i < 8; i++)
+        {
+            Mouse.Scroll(5);
+
+            Thread.Sleep(100);
+        }
+    }
+
+    public static void ClickElement(AutomationElement element)
+    {
+        element.Focus();
+
+        if (element.Patterns.Invoke.IsSupported)
+        {
+            element.Patterns.Invoke.Pattern.Invoke();
+            return;
+        }
+
+        if (element.TryGetClickablePoint(out var point))
+        {
+            Mouse.Click(point);
+            return;
+        }
+
+        var bounds = element.BoundingRectangle;
+
+        Mouse.Click(new Point(
+            bounds.X + bounds.Width / 2,
+            bounds.Y + bounds.Height / 2));
+    }
 }

@@ -2,20 +2,21 @@ namespace MauiUkraine.UITests.Infrastructure;
 
 public static class AppConfig
 {
-	public const string ProcessName = "MauiControlsShowcase";
+	public static string ProcessName => Require("ProcessName");
 
-	/// <summary>
-	/// Path to the unpackaged Windows build of MauiControlsShowcase.
-	/// Override with env var MAUI_UKRAINE_APP_PATH when needed.
-	/// </summary>
-	public static string AppPath
+	public static string AppPath => Require("AppPath");
+
+	public static TimeSpan DefaultTimeout => TimeSpan.FromSeconds(int.Parse(Require("DefaultTimeout")));
+
+	public static TimeSpan PollInterval => TimeSpan.FromMilliseconds(int.Parse(Require("PollInterval")));
+
+	private static string Require(string name)
 	{
-		get
-		{	// Set real path to your MauiUkraine Application	
-			return "C:\\repository\\MauiUkraine\\bin\\x64\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\MauiControlsShowcase.exe";
-		}
-	}
+		var value = TestContext.Parameters[name];
+		if (string.IsNullOrWhiteSpace(value))
+			throw new InvalidOperationException(
+				$"Missing '{name}' in .runsettings. Pass --settings .runsettings when running tests.");
 
-	public static TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(30);
-	public static TimeSpan PollInterval { get; } = TimeSpan.FromMilliseconds(250);
+		return value;
+	}
 }

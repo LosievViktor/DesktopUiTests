@@ -1,4 +1,4 @@
-﻿using MauiUkraine.UITests.Infrastructure;
+using MauiUkraine.UITests.Infrastructure;
 using MauiUkraine.UITests.Pages;
 
 namespace MauiUkraine.UITests.Tests;
@@ -15,8 +15,11 @@ public sealed class ButtonInputsTests : UiTestBase
 	{
 		var page = OpenPage();
 
-		Assert.That(page.FilledButton.IsEnabled, Is.True, "Check that Filled button is enabled");
-		Assert.That(page.FilledButton.Name, Does.Contain(EnglishTexts.Buttons.Filled), "Check that Filled button shows English text");
+		Assert.That(page.FilledButton.IsEnabled, Is.True, 
+			"Check that Filled button is enabled.");
+
+		Assert.That(page.FilledButton.Name, Does.Contain(EnglishTexts.Buttons.Filled), 
+			"Check that Filled button shows English text.");
 	}
 
 	[Test]
@@ -24,8 +27,11 @@ public sealed class ButtonInputsTests : UiTestBase
 	{
 		var page = OpenPage();
 
-		Assert.That(page.OutlineButton.IsEnabled, Is.True, "Check that Outline button is enabled");
-		Assert.That(page.OutlineButton.Name, Does.Contain(EnglishTexts.Buttons.Outline), "Check that Outline button shows English text");
+		Assert.That(page.OutlineButton.IsEnabled, Is.True, 
+			"Check that Outline button is enabled.");
+
+		Assert.That(page.OutlineButton.Name, Does.Contain(EnglishTexts.Buttons.Outline), 
+			"Check that Outline button shows English text.");
 	}
 
 	[Test]
@@ -33,8 +39,11 @@ public sealed class ButtonInputsTests : UiTestBase
 	{
 		var page = OpenPage();
 
-		Assert.That(page.DisabledButton.IsEnabled, Is.False, "Check that Disabled button is disabled");
-		Assert.That(page.DisabledButton.Name, Does.Contain(EnglishTexts.Buttons.Disabled), "Check that Disabled button shows English text");
+		Assert.That(page.DisabledButton.IsEnabled, Is.False, 
+			"Check that Disabled button is disabled.");
+
+		Assert.That(page.DisabledButton.Name, Does.Contain(EnglishTexts.Buttons.Disabled),
+			"Check that Disabled button shows English text.");
 	}
 
 	[Test]
@@ -45,8 +54,11 @@ public sealed class ButtonInputsTests : UiTestBase
 
 		page.EnterFullName(name);
 
-		Assert.That(page.HelloText, Does.Contain(EnglishTexts.Buttons.HelloPrefix), "Check that hello label shows English greeting prefix");
-		Assert.That(page.HelloText, Does.Contain(name), "Check that hello label contains the entered name");
+		Assert.That(page.HelloText, Does.Contain(EnglishTexts.Buttons.HelloPrefix), 
+			"Check that hello label shows English greeting prefix.");
+
+		Assert.That(page.HelloText, Does.Contain(name), 
+			"Check that hello label contains the entered name.");
 	}
 
 	[Test]
@@ -54,8 +66,11 @@ public sealed class ButtonInputsTests : UiTestBase
 	{
 		var page = OpenPage();
 
-		Assert.That(page.PasswordEntry.IsEnabled, Is.True, "Check that Password entry is enabled");
-		Assert.DoesNotThrow(() => page.EnterPassword("s3cret!"), "Check that Password entry accepts text input");
+		Assert.That(page.PasswordEntry.IsEnabled, Is.True, 
+			"Check that Password entry is enabled.");
+
+		Assert.DoesNotThrow(() => page.EnterPassword("s3cret!"), 
+			"Check that Password entry accepts text input.");
 	}
 
 	[Test]
@@ -65,7 +80,8 @@ public sealed class ButtonInputsTests : UiTestBase
 
 		page.EnterNumeric("42");
 
-		Assert.That(UiActions.GetText(page.NumericEntry), Does.Contain("42"), "Check that Numeric entry contains entered digits");
+		Assert.That(UiActions.GetText(page.NumericEntry), Does.Contain("42"), 
+			"Check that Numeric entry contains entered digits.");
 	}
 
 	[Test]
@@ -73,8 +89,11 @@ public sealed class ButtonInputsTests : UiTestBase
 	{
 		var page = OpenPage();
 
-		Assert.That(page.HelloLabel, Is.Not.Null, "Check that hello label is displayed");
-		Assert.That(page.HelloText, Does.Contain(EnglishTexts.Buttons.HelloPrefix), "Check that hello label shows English greeting prefix");
+		Assert.That(page.HelloLabel, Is.Not.Null,
+			"Check that hello label is displayed.");
+
+		Assert.That(page.HelloText, Does.Contain(EnglishTexts.Buttons.HelloPrefix), 
+			"Check that hello label shows English greeting prefix.");
 	}
 
 	[Test]
@@ -82,15 +101,15 @@ public sealed class ButtonInputsTests : UiTestBase
 	{
 		var page = OpenPage();
 
-		Assert.That(page.SearchBar, Is.Not.Null, "Check that SearchBar is displayed");
+		Assert.That(page.SearchBar, Is.Not.Null, "Check that SearchBar is displayed.");
 
 		page.Search("MAUI");
 
-		UiWait.WaitUntil(
-			() => page.HasSearchResultNamed(".NET MAUI"),
-			TimeSpan.FromSeconds(5),
+		UiWait.WaitUntil(() => page.HasSearchResultNamed(".NET MAUI"), TimeSpan.FromSeconds(5),
 			"Expected filtered search result '.NET MAUI'.");
-		Assert.That(page.HasSearchResultNamed("Blazor Hybrid"), Is.False, "Check that unrelated search result is filtered out");
+
+		Assert.That(page.HasSearchResultNamed("Blazor Hybrid"), Is.False, 
+			"Check that unrelated search result is filtered out.");
 	}
 
 	[Test]
@@ -99,16 +118,15 @@ public sealed class ButtonInputsTests : UiTestBase
 		var page = OpenPage();
 
 		page.Search("Blazor");
-		UiWait.WaitUntil(
-			() => page.HasSearchResultNamed("Blazor Hybrid"),
-			TimeSpan.FromSeconds(5),
+		UiWait.WaitUntil(() => page.HasSearchResultNamed("Blazor Hybrid"), TimeSpan.FromSeconds(5),
 			"Expected 'Blazor Hybrid' for query 'Blazor'.");
 
 		page.Search("Shell");
-		UiWait.WaitUntil(
-			() => page.HasSearchResultNamed("Shell Navigation"),
-			TimeSpan.FromSeconds(5),
+
+		UiWait.WaitUntil(() => page.HasSearchResultNamed("Shell Navigation"), TimeSpan.FromSeconds(5),
 			"Expected 'Shell Navigation' for query 'Shell'.");
-		Assert.That(page.HasSearchResultNamed("Blazor Hybrid"), Is.False, "Check that previous search result is no longer shown");
+		
+		Assert.That(page.HasSearchResultNamed("Blazor Hybrid"), Is.False, 
+			"Check that previous search result is no longer shown.");
 	}
 }

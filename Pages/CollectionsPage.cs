@@ -39,7 +39,7 @@ public sealed class CollectionsPage : BasePage
 	public void ToggleFirstTodoDone()
 	{
 		var checkboxes = GetTodoDoneCheckboxes();
-		Assert.That(checkboxes.Length, Is.GreaterThan(0), "Check that at least one todo done checkbox is present");
+		Assert.That(checkboxes.Length, Is.GreaterThan(0), "Check that at least one todo done checkbox is present.");
 		UiActions.Toggle(checkboxes[0]);
 	}
 

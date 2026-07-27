@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <TestRunParameters>
+	  
+    <!-- Full path to the MauiUkraine / MauiControlsShowcase executable -->
+    <Parameter name="AppPath" value="C:\repository\MauiUkraine\bin\x64\Debug\net10.0-windows10.0.19041.0\win-x64\MauiControlsShowcase.exe" />
+    
+	<!-- Process name without .exe (used to close leftover app instances) -->
+    <Parameter name="ProcessName" value="MauiControlsShowcase" />
+    
+	<!-- Default UI wait timeout in seconds -->
+    <Parameter name="DefaultTimeout" value="30" />
+    
+	<!-- Polling interval for UI waits in milliseconds -->
+    <Parameter name="PollInterval" value="250" />
+  
+  </TestRunParameters>
+</RunSettings>
